@@ -12,6 +12,12 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-dev-key-change-me')
 DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
+# Accept any *.onrender.com subdomain automatically so the service works
+# regardless of which subdomain Render assigns
+RENDER_EXTERNAL_HOSTNAME = config('RENDER_EXTERNAL_HOSTNAME', default='')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS = list(ALLOWED_HOSTS) + [RENDER_EXTERNAL_HOSTNAME]
+
 # ─── Application definition ──────────────────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
