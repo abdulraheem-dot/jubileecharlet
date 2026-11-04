@@ -1,0 +1,93 @@
+{% extends 'base/staff_base.html' %}
+
+{% block title %}{{ staff_user.get_full_name }} — Jubilee Chalets{% endblock %}
+
+{% block page_header %}
+<div class="d-flex align-items-center gap-2">
+    <a href="{% url 'accounts:staff_list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h4 class="mb-0 fw-bold">{{ staff_user.get_full_name }}</h4>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card card-hotel text-center p-4">
+            <div class="avatar-circle-lg mx-auto mb-3">
+                {{ staff_user.first_name|first|upper }}{{ staff_user.last_name|first|upper }}
+            </div>
+            <h5 class="fw-bold mb-1">{{ staff_user.get_full_name }}</h5>
+            <p class="text-muted small mb-2">@{{ staff_user.username }}</p>
+            <span class="badge {{ staff_user.get_role_display_badge_class }} mb-3">
+                {{ staff_user.get_role_display }}
+            </span>
+
+            <div class="d-flex gap-2 justify-content-center">
+                {% if profile.is_on_duty %}
+                    <span class="badge bg-success">On Duty</span>
+                {% else %}
+                    <span class="badge bg-secondary">Off Duty</span>
+                {% endif %}
+                {% if not staff_user.is_active %}
+                    <span class="badge bg-danger">Inactive</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card card-hotel">
+            <div class="card-body p-4">
+                <h6 class="section-label mb-3">Contact & Employment</h6>
+                <dl class="row">
+                    <dt class="col-sm-4 text-muted">Email</dt>
+                    <dd class="col-sm-8">{{ staff_user.email|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted">Phone</dt>
+                    <dd class="col-sm-8">{{ staff_user.phone_number|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted">Employee No.</dt>
+                    <dd class="col-sm-8">{{ profile.employee_number|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted">Department</dt>
+                    <dd class="col-sm-8">{{ profile.get_department_display|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted">Shift</dt>
+                    <dd class="col-sm-8">{{ profile.get_shift_display|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted">Date Hired</dt>
+                    <dd class="col-sm-8">{{ profile.date_hired|default:"—" }}</dd>
+
+                    <dt class="col-sm-4 text-muted">Member Since</dt>
+                    <dd class="col-sm-8">{{ staff_user.date_joined|date:"d M Y" }}</dd>
+                </dl>
+
+                {% if profile.bio %}
+                <hr>
+                <h6 class="section-label mb-2">Bio</h6>
+                <p class="text-muted">{{ profile.bio }}</p>
+                {% endif %}
+
+                {% if user.is_manager %}
+                <div class="mt-3 d-flex gap-2">
+                    <a href="{% url 'accounts:staff_edit' staff_user.pk %}" class="btn btn-sm btn-gold">
+                        <i class="bi bi-pencil me-1"></i> Edit Profile
+                    </a>
+                    {% if staff_user.is_active and staff_user != user %}
+                    <form method="post" action="{% url 'accounts:remove_user' staff_user.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger"
+                                onclick="return confirm('Remove {{ staff_user.get_full_name }}? They will be logged out immediately.')">
+                            <i class="bi bi-person-x me-1"></i> Remove &amp; Log Out
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

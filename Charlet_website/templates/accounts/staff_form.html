@@ -1,0 +1,107 @@
+{% extends 'base/staff_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ title }} — Jubilee Chalets{% endblock %}
+
+{% block page_header %}
+<div class="d-flex align-items-center gap-2">
+    <a href="{% url 'accounts:staff_list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h4 class="mb-0 fw-bold">{{ title }}</h4>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-hotel">
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <!-- Personal Information -->
+                    <h6 class="section-label mb-3">Personal Information</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name *</label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}<div class="text-danger small">{{ form.first_name.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name *</label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}<div class="text-danger small">{{ form.last_name.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Username *</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}<div class="text-danger small">{{ form.username.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email Address *</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            {{ form.phone_number }}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Hotel Role -->
+                    <h6 class="section-label mb-3">Hotel Role & Department</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Role *</label>
+                            {{ form.role }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Department</label>
+                            {{ form.department }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Employee Number</label>
+                            {{ form.employee_number }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Shift</label>
+                            {{ form.shift }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date Hired</label>
+                            {{ form.date_hired }}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Password -->
+                    <h6 class="section-label mb-3">Password</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Password *</label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}<div class="text-danger small">{{ form.password1.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Confirm Password *</label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}<div class="text-danger small">{{ form.password2.errors }}</div>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-gold">
+                            <i class="bi bi-check-lg me-1"></i> {{ action }} Staff Member
+                        </button>
+                        <a href="{% url 'accounts:staff_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

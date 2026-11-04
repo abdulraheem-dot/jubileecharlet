@@ -1,0 +1,82 @@
+﻿{% extends 'base/staff_base.html' %}
+
+{% block title %}{{ dept_code }} Dashboard — Jubilee Chalets{% endblock %}
+
+{% block page_header %}
+<h4 class="mb-0 fw-bold">{{ dept_code }} Dashboard</h4>
+{% endblock %}
+
+{% block content %}
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#dbeafe;"><i class="bi bi-bell" style="color:#1d4ed8;"></i></div>
+            <div><div class="stat-value">{{ new_dept_requests }}</div><div class="stat-label">New</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef3c7;"><i class="bi bi-hourglass" style="color:#92400e;"></i></div>
+            <div><div class="stat-value">{{ in_progress }}</div><div class="stat-label">In Progress</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- Assigned to me -->
+<h6 class="section-label mb-3">Assigned to Me</h6>
+<div class="card card-hotel mb-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Room</th><th>Request</th><th>Priority</th><th>Status</th><th>Time Open</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for req in assigned_to_me %}
+                <tr {% if req.is_urgent %}class="table-danger"{% endif %}>
+                    <td><strong>{{ req.room.number }}</strong></td>
+                    <td>{{ req.title|truncatechars:40 }}</td>
+                    <td><span class="status-badge {{ req.priority_css_class }}">{{ req.get_priority_display }}</span></td>
+                    <td><span class="status-badge {{ req.status_css_class }}">{{ req.get_status_display }}</span></td>
+                    <td class="text-muted small">{{ req.created_at|timesince }}</td>
+                    <td>
+                        <a href="{% url 'requests_app:request_detail' req.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No assignments yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- All department requests -->
+<h6 class="section-label mb-3">All {{ dept_code }} Requests</h6>
+<div class="card card-hotel">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Room</th><th>Request</th><th>Priority</th><th>Status</th><th>Assigned</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for req in my_requests|slice:":20" %}
+                <tr>
+                    <td><strong>{{ req.room.number }}</strong></td>
+                    <td>{{ req.title|truncatechars:40 }}</td>
+                    <td><span class="status-badge {{ req.priority_css_class }}">{{ req.get_priority_display }}</span></td>
+                    <td><span class="status-badge {{ req.status_css_class }}">{{ req.get_status_display }}</span></td>
+                    <td class="small">{{ req.assigned_to.get_full_name|default:"—" }}</td>
+                    <td>
+                        <a href="{% url 'requests_app:request_detail' req.pk %}" class="btn btn-sm btn-outline-secondary">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No requests for this department.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

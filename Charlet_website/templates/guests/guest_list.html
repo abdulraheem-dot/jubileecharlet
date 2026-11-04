@@ -1,0 +1,51 @@
+{% extends 'base/staff_base.html' %}
+{% block title %}Guests — Jubilee Chalets{% endblock %}
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center w-100">
+    <h4 class="mb-0 fw-bold">Guests <span class="text-muted fw-normal fs-6">({{ total }})</span></h4>
+    <a href="{% url 'guests:guest_checkin' %}" class="btn btn-sm btn-gold"><i class="bi bi-person-plus me-1"></i>Check In</a>
+</div>
+{% endblock %}
+{% block content %}
+<div class="card card-hotel mb-4">
+    <div class="card-body py-3">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4"><input type="text" name="q" value="{{ search }}" class="form-control form-control-sm" placeholder="Search by name or email..."></div>
+            <div class="col-auto"><button type="submit" class="btn btn-sm btn-outline-secondary">Search</button></div>
+            <div class="col-auto"><a href="?active=1" class="btn btn-sm {% if active_only %}btn-primary{% else %}btn-outline-primary{% endif %}">Active Only</a></div>
+            {% if active_only or search %}<div class="col-auto"><a href="{% url 'guests:guest_list' %}" class="btn btn-sm btn-link text-muted">Clear</a></div>{% endif %}
+        </form>
+    </div>
+</div>
+<div class="card card-hotel">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Guest</th><th>Contact</th><th>Room</th><th>Check-In</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+                {% for guest in guests %}
+                {% with stay=guest.current_stay %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle">{{ guest.first_name|first|upper }}{{ guest.last_name|first|upper }}</div>
+                            <div>
+                                <div class="fw-medium">{{ guest.get_full_name }}</div>
+                                {% if guest.is_vip %}<span class="badge" style="background:#C9A84C;font-size:0.65rem;">VIP</span>{% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td><div class="small text-muted">{{ guest.email|default:"—" }}</div><div class="small text-muted">{{ guest.phone_number|default:"" }}</div></td>
+                    <td>{% if stay %}<strong>{{ stay.room.number }}</strong>{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                    <td class="small text-muted">{% if stay %}{{ stay.check_in_date|date:"d M Y" }}{% else %}—{% endif %}</td>
+                    <td>{% if stay %}<span class="badge bg-success">Checked In</span>{% else %}<span class="badge bg-secondary">Checked Out</span>{% endif %}</td>
+                    <td><a href="{% url 'guests:guest_detail' guest.pk %}" class="btn btn-sm btn-outline-secondary">View</a></td>
+                </tr>
+                {% endwith %}
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-5"><i class="bi bi-people display-6 d-block mb-2"></i>No guests found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

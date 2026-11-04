@@ -1,0 +1,8 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn jubilee_chalets.wsgi:application --bind 0.0.0.0:$PORT"
+healthcheckPath = "/accounts/login/"
+healthcheckTimeout = 60
+restartPolicyType = "on_failure"

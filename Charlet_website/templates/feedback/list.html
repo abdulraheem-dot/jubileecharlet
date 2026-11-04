@@ -1,0 +1,91 @@
+﻿{% extends 'base/staff_base.html' %}
+
+{% block title %}Feedback & Complaints — Jubilee Chalets{% endblock %}
+{% block page_header %}<h4 class="mb-0 fw-bold">Feedback & Complaints</h4>{% endblock %}
+
+{% block content %}
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef9c3;"><i class="bi bi-star-fill" style="color:#854d0e;"></i></div>
+            <div>
+                <div class="stat-value">{{ avg_rating }}★</div>
+                <div class="stat-label">Avg Rating ({{ total_feedback }} reviews)</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fee2e2;"><i class="bi bi-megaphone" style="color:#dc2626;"></i></div>
+            <div>
+                <div class="stat-value">{{ open_complaints.count }}</div>
+                <div class="stat-label">Open Complaints</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feedback -->
+<h6 class="section-label mb-3">Recent Guest Feedback</h6>
+<div class="card card-hotel mb-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Request</th><th>Guest</th><th>Rating</th><th>Comment</th><th>Date</th></tr>
+            </thead>
+            <tbody>
+                {% for fb in feedbacks %}
+                <tr>
+                    <td class="small">{{ fb.request.title|truncatechars:30 }}</td>
+                    <td>{{ fb.guest.get_full_name }}</td>
+                    <td>
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= fb.rating %}⭐{% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="text-muted small">{{ fb.comment|truncatechars:50|default:"—" }}</td>
+                    <td class="text-muted small">{{ fb.created_at|date:"d M Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted py-4">No feedback yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Complaints -->
+<h6 class="section-label mb-3">Complaints</h6>
+<div class="card card-hotel">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr><th>Room</th><th>Guest</th><th>Category</th><th>Priority</th><th>Status</th><th>Date</th></tr>
+            </thead>
+            <tbody>
+                {% for c in complaints %}
+                <tr>
+                    <td><strong>{{ c.room.number }}</strong></td>
+                    <td>{{ c.guest.get_full_name }}</td>
+                    <td>{{ c.get_category_display }}</td>
+                    <td><span class="status-badge priority-{{ c.priority|lower }}">{{ c.get_priority_display }}</span></td>
+                    <td>
+                        <span class="badge
+                            {% if c.status == 'RESOLVED' %}bg-success
+                            {% elif c.status == 'OPEN' %}bg-danger
+                            {% else %}bg-warning text-dark{% endif %}">
+                            {{ c.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="text-muted small">{{ c.created_at|date:"d M Y" }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="text-center text-muted py-4">No complaints.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

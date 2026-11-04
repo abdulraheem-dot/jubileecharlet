@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: jubilee-chalets-api
+    runtime: python
+    rootDir: .
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: jubilee-chalets-api.onrender.com
+      - key: DATABASE_URL
+        fromDatabase:
+          name: jubilee-db
+          property: connectionString
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings
+
+databases:
+  - name: jubilee-db
+    databaseName: jubilee_chalets
+    user: jubilee

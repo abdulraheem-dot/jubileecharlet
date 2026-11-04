@@ -1,0 +1,50 @@
+{% extends 'base/staff_base.html' %}
+{% block title %}Inventory — Jubilee Chalets{% endblock %}
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center w-100">
+    <h4 class="mb-0 fw-bold">Inventory Management</h4>
+    <a href="{% url 'inventory:create' %}" class="btn btn-sm btn-gold"><i class="bi bi-plus me-1"></i>Add Item</a>
+</div>
+{% endblock %}
+{% block content %}
+{% if low_stock %}
+<div class="alert alert-warning mb-4">
+    <strong><i class="bi bi-exclamation-triangle me-2"></i>Low Stock Alert:</strong>
+    {% for item in low_stock %}<strong>{{ item.name }}</strong> ({{ item.quantity }} {{ item.unit }}, min {{ item.minimum_level }}){% if not forloop.last %}, {% endif %}{% endfor %}
+</div>
+{% endif %}
+<div class="card card-hotel">
+    <div class="card-header bg-transparent border-bottom py-3 px-4">
+        <form method="get" class="d-flex gap-2">
+            <select name="dept" class="form-select form-select-sm w-auto">
+                <option value="">All Departments</option>
+                {% for val,label in departments %}<option value="{{ val }}" {% if dept_filter == val %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+            <button type="submit" class="btn btn-sm btn-outline-secondary">Filter</button>
+        </form>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Item</th><th>Department</th><th>Quantity</th><th>Minimum</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+                {% for item in items %}
+                <tr class="{% if item.is_low_stock %}table-warning{% endif %}">
+                    <td><strong>{{ item.name }}</strong><div class="text-muted small">{{ item.description|truncatechars:40 }}</div></td>
+                    <td><span class="badge bg-secondary">{{ item.get_department_display }}</span></td>
+                    <td><strong>{{ item.quantity }}</strong> {{ item.unit }}</td>
+                    <td class="text-muted">{{ item.minimum_level }} {{ item.unit }}</td>
+                    <td>{% if item.is_low_stock %}<span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle me-1"></i>Low Stock</span>{% else %}<span class="badge bg-success">OK</span>{% endif %}</td>
+                    <td>
+                        <form method="post" action="{% url 'inventory:update_quantity' item.pk %}" class="d-flex gap-1">
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="{{ item.quantity }}" class="form-control form-control-sm" style="width:80px;" min="0">
+                            <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}<tr><td colspan="6" class="text-center text-muted py-4">No inventory items.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

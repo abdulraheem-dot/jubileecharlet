@@ -1,0 +1,42 @@
+# Python / Django
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+venv/
+.env
+*.sqlite3
+staticfiles/
+media/
+*.log
+
+# Node / React
+node_modules/
+dist/
+.env.local
+.env.production
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Test / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Build artifacts
+*.egg-info/
+.eggs/
+
+# Raw image files in project root (already copied into backend/media/)
+*.jpg
+*.jpeg
+*.png
+*.webp

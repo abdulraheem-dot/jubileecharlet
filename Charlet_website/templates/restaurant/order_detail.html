@@ -1,0 +1,113 @@
+﻿{% extends 'base/staff_base.html' %}
+
+{% block title %}Order #{{ order.pk }} — Jubilee Chalets{% endblock %}
+
+{% block page_header %}
+<div class="d-flex align-items-center gap-2">
+    <a href="{% url 'restaurant:dashboard' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h4 class="mb-0 fw-bold">Order #{{ order.pk }} — Room {{ order.room.number }}</h4>
+    <span class="badge
+        {% if order.status == 'DELIVERED' %}bg-success
+        {% elif order.status == 'CANCELLED' %}bg-secondary
+        {% elif order.status == 'READY' %}bg-warning text-dark
+        {% elif order.status == 'PREPARING' %}bg-info text-dark
+        {% else %}bg-primary{% endif %}">
+        {{ order.get_status_display }}
+    </span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <div class="col-md-7">
+        <div class="card card-hotel">
+            <div class="card-body p-4">
+                <h6 class="section-label mb-3">Order Items</h6>
+                <table class="table">
+                    <thead class="table-light">
+                        <tr><th>Item</th><th>Qty</th><th class="text-end">Subtotal</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td>{{ item.item.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td class="text-end">₦{{ item.subtotal|floatformat:0 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2" class="text-end fw-bold">Total</td>
+                            <td class="text-end fw-bold fs-5">₦{{ order.total|floatformat:0 }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                {% if order.special_instructions %}
+                <div class="alert alert-light">
+                    <strong>Special Instructions:</strong> {{ order.special_instructions }}
+                </div>
+                {% endif %}
+
+                <dl class="row small mt-3">
+                    <dt class="col-4 text-muted">Guest</dt>
+                    <dd class="col-8">{{ order.guest.get_full_name|default:"—" }}</dd>
+
+                    <dt class="col-4 text-muted">Ordered At</dt>
+                    <dd class="col-8">{{ order.created_at|date:"d M Y H:i" }}</dd>
+
+                    {% if order.delivered_at %}
+                    <dt class="col-4 text-muted">Delivered At</dt>
+                    <dd class="col-8">{{ order.delivered_at|date:"d M Y H:i" }}</dd>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card card-hotel">
+            <div class="card-body p-4">
+                <h6 class="section-label mb-3">Update Order Status</h6>
+                <form method="post" action="{% url 'restaurant:update_order_status' order.pk %}">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        {% if order.status == 'NEW' %}
+                        <button type="submit" name="status" value="CONFIRMED" class="btn btn-primary">
+                            <i class="bi bi-check me-1"></i> Confirm Order
+                        </button>
+                        {% endif %}
+                        {% if order.status == 'CONFIRMED' %}
+                        <button type="submit" name="status" value="PREPARING" class="btn btn-warning">
+                            <i class="bi bi-fire me-1"></i> Start Preparing
+                        </button>
+                        {% endif %}
+                        {% if order.status == 'PREPARING' %}
+                        <button type="submit" name="status" value="READY" class="btn btn-info">
+                            <i class="bi bi-bag-check me-1"></i> Mark Ready
+                        </button>
+                        {% endif %}
+                        {% if order.status == 'READY' %}
+                        <button type="submit" name="status" value="DELIVERED" class="btn btn-success">
+                            <i class="bi bi-check-circle me-1"></i> Mark Delivered
+                        </button>
+                        {% endif %}
+                        {% if order.status != 'DELIVERED' and order.status != 'CANCELLED' %}
+                        <button type="submit" name="status" value="CANCELLED"
+                                class="btn btn-outline-danger"
+                                onclick="return confirm('Cancel this order?')">
+                            <i class="bi bi-x-circle me-1"></i> Cancel Order
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

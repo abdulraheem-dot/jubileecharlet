@@ -1,0 +1,84 @@
+{% extends 'base/staff_base.html' %}
+
+{% block title %}My Profile — Jubilee Chalets{% endblock %}
+
+{% block page_header %}
+<h4 class="mb-0 fw-bold">My Profile</h4>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-hotel mb-4">
+            <div class="card-body p-4 d-flex align-items-center gap-3">
+                <div class="avatar-circle-lg">
+                    {{ user.first_name|first|upper }}{{ user.last_name|first|upper }}
+                </div>
+                <div>
+                    <h5 class="fw-bold mb-0">{{ user.get_full_name }}</h5>
+                    <span class="badge {{ user.get_role_display_badge_class }} mt-1">{{ user.get_role_display }}</span>
+                    <div class="text-muted small mt-1">{{ user.email }}</div>
+                </div>
+                <div class="ms-auto">
+                    <!-- Duty toggle button -->
+                    <form method="post" action="{% url 'accounts:toggle_duty' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm {% if profile.is_on_duty %}btn-success{% else %}btn-outline-secondary{% endif %}">
+                            <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>
+                            {% if profile.is_on_duty %}On Duty{% else %}Off Duty{% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-hotel">
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <h6 class="section-label mb-3">Personal Information</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name</label>
+                            {{ user_form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name</label>
+                            {{ user_form.last_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            {{ user_form.email }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            {{ user_form.phone_number }}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h6 class="section-label mb-3">Additional Information</h6>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">Bio</label>
+                            {{ profile_form.bio }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Profile Photo</label>
+                            {{ profile_form.profile_photo }}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-gold">
+                            <i class="bi bi-check-lg me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

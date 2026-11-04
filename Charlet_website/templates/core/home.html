@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jubilee Chalets — Epe, Lagos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold:#C9A84C; --dark:#1a2332; --darker:#111827; }
+        body { font-family:'Inter',sans-serif; margin:0; }
+
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--darker) 0%, #2d3f5c 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; color: white; padding: 2rem;
+        }
+        .hero-logo { font-family:'Playfair Display',serif; font-size:3rem; font-weight:700; color:var(--gold); }
+        .hero-sub  { font-size:0.85rem; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.5); margin-top:0.25rem; }
+        .hero-tagline { font-size:1.15rem; color:rgba(255,255,255,0.75); margin:1.5rem 0; max-width:480px; }
+
+        .portal-cards { display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; margin-top:2rem; }
+        .portal-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px; padding: 2rem 2.5rem;
+            width: 220px; text-decoration: none; color: white;
+            transition: all 0.2s;
+        }
+        .portal-card:hover { background: rgba(201,168,76,0.15); border-color: var(--gold); color:white; transform:translateY(-4px); }
+        .portal-card i { font-size:2.5rem; color:var(--gold); display:block; margin-bottom:1rem; }
+        .portal-card h5 { font-weight:600; margin-bottom:0.5rem; }
+        .portal-card p  { font-size:0.8rem; color:rgba(255,255,255,0.55); margin:0; }
+    </style>
+</head>
+<body>
+<div class="hero">
+    <div class="hero-logo"><i class="bi bi-building me-2"></i>Jubilee Chalets</div>
+    <div class="hero-sub">Epe · Lagos · Nigeria</div>
+    <p class="hero-tagline">A luxury resort and conference centre overlooking the lagoon.</p>
+
+    <div class="portal-cards">
+        <a href="{% url 'guests:portal_entry' %}" class="portal-card">
+            <i class="bi bi-house-door"></i>
+            <h5>Guest Portal</h5>
+            <p>Request services, order food, and contact reception from your room.</p>
+        </a>
+        <a href="{% url 'accounts:login' %}" class="portal-card">
+            <i class="bi bi-person-badge"></i>
+            <h5>Staff Login</h5>
+            <p>Receptionist, management, housekeeping and department staff sign in here.</p>
+        </a>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

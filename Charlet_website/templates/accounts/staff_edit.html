@@ -1,0 +1,101 @@
+{% extends 'base/staff_base.html' %}
+
+{% block title %}Edit Staff — {{ staff_user.get_full_name }} — Jubilee Chalets{% endblock %}
+
+{% block page_header %}
+<div class="d-flex align-items-center gap-2">
+    <a href="{% url 'accounts:staff_list' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h4 class="mb-0 fw-bold">Edit: {{ staff_user.get_full_name }}</h4>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-hotel">
+            <div class="card-body p-4">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <h6 class="section-label mb-3">Personal Information</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name</label>
+                            {{ user_form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name</label>
+                            {{ user_form.last_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            {{ user_form.email }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            {{ user_form.phone_number }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Role</label>
+                            {{ user_form.role }}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h6 class="section-label mb-3">Hotel Profile</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Department</label>
+                            {{ profile_form.department }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Employee Number</label>
+                            {{ profile_form.employee_number }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Shift</label>
+                            {{ profile_form.shift }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date Hired</label>
+                            {{ profile_form.date_hired }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Bio / Notes</label>
+                            {{ profile_form.bio }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Profile Photo</label>
+                            {{ profile_form.profile_photo }}
+                        </div>
+                        <div class="col-md-6 d-flex align-items-end">
+                            <div class="form-check">
+                                {{ profile_form.is_on_duty }}
+                                <label class="form-check-label ms-2">Currently On Duty</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-gold">
+                            <i class="bi bi-check-lg me-1"></i> Save Changes
+                        </button>
+                        <a href="{% url 'accounts:staff_list' %}" class="btn btn-outline-secondary">Cancel</a>
+
+                        {% if user.is_super_admin and staff_user != user %}
+                        <a href="{% url 'accounts:staff_deactivate' staff_user.pk %}"
+                           class="btn btn-outline-danger ms-auto"
+                           onclick="return confirm('Deactivate this staff account?')">
+                            <i class="bi bi-person-x me-1"></i> Deactivate
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

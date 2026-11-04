@@ -1,0 +1,132 @@
+{% extends 'base/staff_base.html' %}
+{% load static %}
+
+{% block title %}Staff Management — Jubilee Chalets{% endblock %}
+
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center">
+    <div>
+        <h4 class="mb-0 fw-bold">Staff Management</h4>
+        <p class="text-muted small mb-0">{{ total_staff }} staff member{{ total_staff|pluralize }} found</p>
+    </div>
+    {% if user.is_manager %}
+    <a href="{% url 'accounts:staff_create' %}" class="btn btn-gold">
+        <i class="bi bi-person-plus me-1"></i> Add Staff
+    </a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block content %}
+
+<!-- Filters -->
+<div class="card card-hotel mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label small fw-medium">Filter by Role</label>
+                <select name="role" class="form-select form-select-sm">
+                    <option value="">All Roles</option>
+                    {% for value, label in roles %}
+                        <option value="{{ value }}" {% if role_filter == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-funnel me-1"></i>Filter
+                </button>
+                <a href="{% url 'accounts:staff_list' %}" class="btn btn-sm btn-link text-muted">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Staff Table -->
+<div class="card card-hotel">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Staff Member</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>Shift</th>
+                    <th>Status</th>
+                    <th>Contact</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in staff %}
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar-circle">
+                                {{ member.first_name|first|upper }}{{ member.last_name|first|upper }}
+                            </div>
+                            <div>
+                                <div class="fw-medium">{{ member.get_full_name }}</div>
+                                <div class="text-muted small">@{{ member.username }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge {{ member.get_role_display_badge_class }}">
+                            {{ member.get_role_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if member.staffprofile.department %}
+                            {{ member.staffprofile.get_department_display }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if member.staffprofile.shift %}
+                            {{ member.staffprofile.get_shift_display }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not member.is_active %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% elif member.staffprofile.is_on_duty %}
+                            <span class="badge bg-success">On Duty</span>
+                        {% else %}
+                            <span class="badge bg-light text-dark border">Off Duty</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="small text-muted">{{ member.phone_number|default:"—" }}</span>
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'accounts:staff_detail' member.pk %}" class="btn btn-sm btn-outline-secondary me-1">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        {% if user.is_manager %}
+                        <a href="{% url 'accounts:staff_edit' member.pk %}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-people display-6 d-block mb-2"></i>
+                        No staff members found.
+                        {% if user.is_manager %}
+                            <a href="{% url 'accounts:staff_create' %}">Add the first staff member.</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

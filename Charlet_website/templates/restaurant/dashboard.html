@@ -1,0 +1,38 @@
+{% extends 'base/staff_base.html' %}
+{% block title %}Restaurant — Jubilee Chalets{% endblock %}
+{% block page_header %}
+<div class="d-flex justify-content-between align-items-center w-100">
+    <h4 class="mb-0 fw-bold">Restaurant Dashboard</h4>
+    <a href="{% url 'restaurant:menu_management' %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-list-ul me-1"></i>Menu</a>
+</div>
+{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-4"><div class="stat-card"><div class="stat-icon" style="background:#fee2e2;"><i class="bi bi-bag" style="color:#dc2626;"></i></div><div><div class="stat-value">{{ new_count }}</div><div class="stat-label">New Orders</div></div></div></div>
+    <div class="col-4"><div class="stat-card"><div class="stat-icon" style="background:#fef3c7;"><i class="bi bi-fire" style="color:#92400e;"></i></div><div><div class="stat-value">{{ preparing_count }}</div><div class="stat-label">Preparing</div></div></div></div>
+    <div class="col-4"><div class="stat-card"><div class="stat-icon" style="background:#d1fae5;"><i class="bi bi-check" style="color:#065f46;"></i></div><div><div class="stat-value">{{ ready_count }}</div><div class="stat-label">Ready</div></div></div></div>
+</div>
+<div class="card card-hotel">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light"><tr><th>Order #</th><th>Room</th><th>Guest</th><th>Status</th><th>Time</th><th></th></tr></thead>
+            <tbody>
+                {% for order in active_orders %}
+                <tr>
+                    <td>#{{ order.pk }}</td>
+                    <td><strong>{{ order.room.number }}</strong></td>
+                    <td>{{ order.guest.get_full_name|default:"—" }}</td>
+                    <td>
+                        <span class="badge {% if order.status == 'NEW' %}bg-primary{% elif order.status == 'PREPARING' %}bg-warning text-dark{% elif order.status == 'READY' %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="text-muted small">{{ order.created_at|timesince }} ago</td>
+                    <td><a href="{% url 'restaurant:order_detail' order.pk %}" class="btn btn-sm btn-outline-primary">View</a></td>
+                </tr>
+                {% empty %}<tr><td colspan="6" class="text-center text-muted py-4">No active orders.</td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

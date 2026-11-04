@@ -1,0 +1,119 @@
+﻿{% extends 'base/staff_base.html' %}
+
+{% block title %}Maintenance #{{ record.pk }} — Jubilee Chalets{% endblock %}
+
+{% block page_header %}
+<div class="d-flex align-items-center gap-2">
+    <a href="{% url 'maintenance:dashboard' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i>
+    </a>
+    <h4 class="mb-0 fw-bold">{{ record.title }}</h4>
+    <span class="badge bg-secondary">{{ record.get_status_display }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <div class="col-md-8">
+        <div class="card card-hotel">
+            <div class="card-body p-4">
+                <dl class="row">
+                    <dt class="col-4 text-muted">Room</dt>
+                    <dd class="col-8"><strong>{{ record.room.number }}</strong></dd>
+
+                    <dt class="col-4 text-muted">Category</dt>
+                    <dd class="col-8">{{ record.get_category_display }}</dd>
+
+                    <dt class="col-4 text-muted">Priority</dt>
+                    <dd class="col-8">
+                        <span class="status-badge priority-{{ record.priority|lower }}">{{ record.get_priority_display }}</span>
+                    </dd>
+
+                    <dt class="col-4 text-muted">Status</dt>
+                    <dd class="col-8">
+                        <span class="badge
+                            {% if record.status == 'COMPLETED' %}bg-success
+                            {% elif record.status == 'IN_PROGRESS' %}bg-warning text-dark
+                            {% elif record.status == 'ON_HOLD' %}bg-secondary
+                            {% else %}bg-danger{% endif %}">
+                            {{ record.get_status_display }}
+                        </span>
+                    </dd>
+
+                    <dt class="col-4 text-muted">Reported By</dt>
+                    <dd class="col-8">{{ record.reported_by.get_full_name|default:"—" }}</dd>
+
+                    <dt class="col-4 text-muted">Assigned To</dt>
+                    <dd class="col-8">{{ record.assigned_to.get_full_name|default:"Not assigned" }}</dd>
+
+                    <dt class="col-4 text-muted">Created</dt>
+                    <dd class="col-8">{{ record.created_at|date:"d M Y H:i" }}</dd>
+
+                    {% if record.completed_at %}
+                    <dt class="col-4 text-muted">Completed</dt>
+                    <dd class="col-8">{{ record.completed_at|date:"d M Y H:i" }}</dd>
+                    {% endif %}
+                </dl>
+
+                {% if record.description %}
+                <hr>
+                <h6 class="section-label mb-2">Description</h6>
+                <p>{{ record.description }}</p>
+                {% endif %}
+
+                {% if record.notes %}
+                <hr>
+                <h6 class="section-label mb-2">Technician Notes</h6>
+                <p>{{ record.notes }}</p>
+                {% endif %}
+
+                {% if record.photo %}
+                <hr>
+                <h6 class="section-label mb-2">Before Photo</h6>
+                <img src="{{ record.photo.url }}" class="img-fluid rounded" style="max-height:300px;">
+                {% endif %}
+
+                {% if record.photo_after %}
+                <hr>
+                <h6 class="section-label mb-2">After Photo</h6>
+                <img src="{{ record.photo_after.url }}" class="img-fluid rounded" style="max-height:300px;">
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card card-hotel">
+            <div class="card-body p-3">
+                <h6 class="section-label mb-3">Update Record</h6>
+                <form method="post" action="{% url 'maintenance:update_record' record.pk %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-2">
+                        <label class="form-label small">Status</label>
+                        <select name="status" class="form-select form-select-sm">
+                            <option value="OPEN" {% if record.status == 'OPEN' %}selected{% endif %}>Open</option>
+                            <option value="IN_PROGRESS" {% if record.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+                            <option value="ON_HOLD" {% if record.status == 'ON_HOLD' %}selected{% endif %}>On Hold</option>
+                            <option value="COMPLETED" {% if record.status == 'COMPLETED' %}selected{% endif %}>Completed</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small">Add Notes</label>
+                        <textarea name="notes" class="form-control form-control-sm" rows="3"
+                                  placeholder="Technician notes..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small">After Photo</label>
+                        <input type="file" name="photo_after" class="form-control form-control-sm" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn btn-gold w-100">
+                        <i class="bi bi-check me-1"></i> Update
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

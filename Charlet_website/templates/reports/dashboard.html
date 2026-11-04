@@ -1,0 +1,158 @@
+{% extends 'base/staff_base.html' %}
+
+{% block title %}Reports & Analytics — Jubilee Chalets{% endblock %}
+{% block page_header %}<h4 class="mb-0 fw-bold">Reports & Analytics</h4>{% endblock %}
+
+{% block content %}
+
+<!-- TOP STATS -->
+<div class="row g-3 mb-4">
+    {% with stats=req_summary %}
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#dbeafe;"><i class="bi bi-bell" style="color:#1d4ed8;"></i></div>
+            <div><div class="stat-value">{{ stats.total_today }}</div><div class="stat-label">Requests Today</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#d1fae5;"><i class="bi bi-check-circle" style="color:#065f46;"></i></div>
+            <div><div class="stat-value">{{ stats.completed_today }}</div><div class="stat-label">Completed Today</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef3c7;"><i class="bi bi-hourglass" style="color:#92400e;"></i></div>
+            <div><div class="stat-value">{{ stats.pending }}</div><div class="stat-label">Pending</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fee2e2;"><i class="bi bi-exclamation-triangle" style="color:#dc2626;"></i></div>
+            <div><div class="stat-value">{{ stats.urgent_open }}</div><div class="stat-label">Urgent Open</div></div>
+        </div>
+    </div>
+    {% endwith %}
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#ede9fe;"><i class="bi bi-house" style="color:#5b21b6;"></i></div>
+            <div><div class="stat-value">{{ occupancy_pct }}%</div><div class="stat-label">Room Occupancy</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#fef9c3;"><i class="bi bi-star" style="color:#854d0e;"></i></div>
+            <div><div class="stat-value">{{ avg_rating }}★</div><div class="stat-label">Avg Guest Rating</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#ecfdf5;"><i class="bi bi-people" style="color:#065f46;"></i></div>
+            <div><div class="stat-value">{{ active_guests }}</div><div class="stat-label">Active Guests</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#f3f4f6;"><i class="bi bi-clock" style="color:#374151;"></i></div>
+            <div><div class="stat-value">{{ avg_response_mins }}m</div><div class="stat-label">Avg Response Time</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- CHARTS -->
+<div class="row g-4 mb-4">
+    <div class="col-md-8">
+        <div class="card card-hotel p-4">
+            <h6 class="section-label mb-3">Requests — Last 7 Days</h6>
+            <canvas id="dailyChart" height="100"></canvas>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-hotel p-4">
+            <h6 class="section-label mb-3">By Department (This Week)</h6>
+            <canvas id="deptChart" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- By Department table -->
+    <div class="col-md-6">
+        <div class="card card-hotel">
+            <div class="card-body p-4">
+                <h6 class="section-label mb-3">Requests by Department</h6>
+                <table class="table table-sm">
+                    <thead><tr><th>Department</th><th class="text-end">Count</th></tr></thead>
+                    <tbody>
+                        {% for d in by_dept %}
+                        <tr><td>{{ d.department }}</td><td class="text-end fw-medium">{{ d.count }}</td></tr>
+                        {% empty %}<tr><td colspan="2" class="text-muted text-center">No data</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room summary -->
+    <div class="col-md-6">
+        <div class="card card-hotel">
+            <div class="card-body p-4">
+                <h6 class="section-label mb-3">Room Status Summary</h6>
+                <dl class="row">
+                    <dt class="col-6 text-muted">Total Rooms</dt><dd class="col-6 fw-medium">{{ room_summary.total }}</dd>
+                    <dt class="col-6 text-muted">Occupied</dt><dd class="col-6 fw-medium text-primary">{{ room_summary.occupied }}</dd>
+                    <dt class="col-6 text-muted">Available</dt><dd class="col-6 fw-medium text-success">{{ room_summary.available }}</dd>
+                    <dt class="col-6 text-muted">Under Maintenance</dt><dd class="col-6 fw-medium text-danger">{{ room_summary.maintenance }}</dd>
+                    <dt class="col-6 text-muted">Occupancy Rate</dt><dd class="col-6 fw-bold" style="color:var(--gold);">{{ occupancy_pct }}%</dd>
+                    <dt class="col-6 text-muted">Food Orders Today</dt><dd class="col-6 fw-medium">{{ food_orders_today }}</dd>
+                    <dt class="col-6 text-muted">Open Complaints</dt><dd class="col-6 fw-medium text-danger">{{ open_complaints }}</dd>
+                    <dt class="col-6 text-muted">Total Feedback</dt><dd class="col-6 fw-medium">{{ total_feedback }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const goldColor = '#C9A84C';
+
+// Daily requests bar chart
+new Chart(document.getElementById('dailyChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ daily_labels|safe }},
+        datasets: [{
+            label: 'Requests',
+            data: {{ daily_data|safe }},
+            backgroundColor: goldColor + '99',
+            borderColor: goldColor,
+            borderWidth: 2,
+            borderRadius: 6,
+        }]
+    },
+    options: {
+        responsive:true, plugins:{legend:{display:false}},
+        scales:{ y:{beginAtZero:true, ticks:{stepSize:1}} }
+    }
+});
+
+// Department doughnut
+new Chart(document.getElementById('deptChart'), {
+    type: 'doughnut',
+    data: {
+        labels: {{ dept_labels|safe }},
+        datasets:[{
+            data: {{ dept_counts|safe }},
+            backgroundColor:['#C9A84C','#1d4ed8','#10b981','#ef4444','#8b5cf6','#f59e0b','#6b7280','#0ea5e9'],
+        }]
+    },
+    options:{ responsive:true, plugins:{legend:{position:'bottom',labels:{font:{size:11}}}} }
+});
+</script>
+{% endblock %}

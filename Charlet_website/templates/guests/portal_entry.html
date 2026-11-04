@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Portal — Jubilee Chalets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --gold:#C9A84C; --dark:#1a2332; }
+        body { font-family:'Inter',sans-serif; background:linear-gradient(135deg,#111827,#1a2332); min-height:100vh; display:flex; align-items:center; justify-content:center; }
+        .portal-card { background:white; border-radius:20px; padding:2.5rem; max-width:420px; width:100%; margin:1rem; }
+        .hotel-name { font-family:'Playfair Display',serif; color:var(--gold); font-size:1.5rem; }
+        .btn-gold { background:var(--gold); color:white; border:none; font-weight:600; }
+        .btn-gold:hover { background:#b8913a; color:white; }
+        .scan-box { border:2px dashed #d1d5db; border-radius:12px; padding:2rem; text-align:center; }
+    </style>
+</head>
+<body>
+<div class="portal-card">
+    <div class="text-center mb-4">
+        <div class="hotel-name"><i class="bi bi-building me-2"></i>Jubilee Chalets</div>
+        <div class="text-muted small">Epe · Lagos · Nigeria</div>
+    </div>
+
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    {% endfor %}
+
+    <div class="scan-box mb-4">
+        <i class="bi bi-qr-code-scan display-4 d-block mb-2 text-muted"></i>
+        <h6 class="fw-semibold mb-1">Scan Your Room QR Code</h6>
+        <p class="text-muted small mb-0">Find the QR code in your room or on your key card sleeve and scan it with your phone camera to access guest services.</p>
+    </div>
+
+    <div class="text-center text-muted small mb-3">— or enter your room details manually —</div>
+
+    <form method="post" action="">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Room Number</label>
+            {{ form.room_number }}
+            {% if form.room_number.errors %}
+            <div class="text-danger small mt-1">{{ form.room_number.errors.0 }}</div>
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Access Code</label>
+            {{ form.access_code }}
+            {% if form.access_code.errors %}
+            <div class="text-danger small mt-1">{{ form.access_code.errors.0 }}</div>
+            {% endif %}
+            <div class="form-text">Found on your key card sleeve or provided at reception.</div>
+        </div>
+        <button type="submit" class="btn btn-gold w-100 py-2">Access Guest Services</button>
+    </form>
+
+    <div class="text-center mt-3">
+        <small class="text-muted">Staff? <a href="{% url 'accounts:login' %}">Sign in here</a></small>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
